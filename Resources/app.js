@@ -1,64 +1,99 @@
-// this sets the background color of the master UIView (when there are no windows/tab groups on it)
-Titanium.UI.setBackgroundColor('#000');
+Ti.include('js/application.js');
+
+Ti.UI.setBackgroundColor(appBackgroundColor);
 
 // create tab group
-var tabGroup = Titanium.UI.createTabGroup();
+var tabGroup = Titanium.UI.createTabGroup({id:'mainTG'});
 
 
-//
-// create base UI tab and root window
-//
-var win1 = Titanium.UI.createWindow({  
-    title:'Tab 1',
-    backgroundColor:'#fff'
+// Home Tab
+var homeWindow = Titanium.UI.createWindow({
+    url:'js/home.js',
+    titleid:'home_win_title'
 });
-var tab1 = Titanium.UI.createTab({  
+
+var homeTab = Titanium.UI.createTab({  
     icon:'KS_nav_views.png',
-    title:'Tab 1',
-    window:win1
+    title:'Home',
+    window:homeWindow
 });
 
-var label1 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 1',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
+
+//Match Tab
+var matchWindow = Titanium.UI.createWindow({  
+    url:'js/match.js',
+    titleid:'match_win_title'
+});
+var matchTab = Titanium.UI.createTab({  
+    icon:'KS_nav_views.png',
+    title:'Match',
+    window:matchWindow
 });
 
-win1.add(label1);
 
-//
-// create controls tab and root window
-//
-var win2 = Titanium.UI.createWindow({  
-    title:'Tab 2',
-    backgroundColor:'#fff'
+// Squad Tab
+var squadWindow = Titanium.UI.createWindow({
+    url:'js/squad.js',
+    titleid:'squad_win_title'
 });
-var tab2 = Titanium.UI.createTab({  
-    icon:'KS_nav_ui.png',
-    title:'Tab 2',
-    window:win2
+var squadTab = Titanium.UI.createTab({  
+    icon:'KS_nav_views.png',
+    title:'Squad',
+    window:squadWindow
 });
 
-var label2 = Titanium.UI.createLabel({
-	color:'#999',
-	text:'I am Window 2',
-	font:{fontSize:20,fontFamily:'Helvetica Neue'},
-	textAlign:'center',
-	width:'auto'
+
+// Presidents Tab
+var presidentWindow = Titanium.UI.createWindow({
+    url:'js/president.js',
+    titleid:'president_win_title'
+});
+var presidentTab = Titanium.UI.createTab({  
+    icon:'KS_nav_views.png',
+    title:'President',
+    window:presidentWindow
 });
 
-win2.add(label2);
 
+tabGroup.addTab(homeTab);
+tabGroup.addTab(matchTab);
+tabGroup.addTab(squadTab);
+tabGroup.addTab(presidentTab);
 
-
-//
-//  add tabs
-//
-tabGroup.addTab(tab1);  
-tabGroup.addTab(tab2);  
-
-
+tabGroup.setActiveTab(0);
 // open tab group
-tabGroup.open();
+
+tabGroup.open({
+	transition:Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT,
+	fullscreen:true	
+});
+
+
+Ti.include('js/rest.js');
+Ti.include('js/boot.js');
+
+//Check if the user has opened the app first time, if yes, ask to choose team and team name
+if(new_user == "1") {
+		//Create a popup widow
+		var initWindow = Titanium.UI.createWindow({
+			height:0,
+			backgroundColor:appBackgroundColor,
+			bottom:0
+		});
+		
+		// create a button to close window
+		var submitButton = Titanium.UI.createButton({
+			title:'Start Playing',
+			style:Titanium.UI.iPhone.SystemButtonStyle.PLAIN
+		});
+		initWindow.setRightNavButton(submitButton);
+		submitButton.addEventListener('click', function()
+		{
+			initWindow.close();
+			tabGroup.open({
+				transition:Titanium.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
+			});
+		});
+		
+		initWindow.open({modal:true});
+}
